@@ -1,0 +1,4 @@
+#ifndef CPP_FILE_MANAGER_SEARCH_H
+#define CPP_FILE_MANAGER_SEARCH_H
+
+#endif
