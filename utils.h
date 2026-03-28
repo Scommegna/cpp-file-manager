@@ -7,5 +7,7 @@
 
 void print_files(const std::vector<FileEntry>& files);
 std::vector<std::string> split(const std::string& input);
+void print_info(const FileInfo& info);
+std::string format_permissions(mode_t mode);
 
 #endif

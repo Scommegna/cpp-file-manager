@@ -3,8 +3,6 @@
 #include "filesystem.h"
 #include "utils.h"
 
-
-
 int main() {
     std::string input;
 
@@ -23,7 +21,19 @@ int main() {
 
             auto files = list_dir(path);
             print_files(files);
-        } else {
+        }
+
+        if (args[0] == "info") {
+            if (args.size() < 2) {
+                std::cout << "Usage: info <file>" << std::endl;
+                continue;
+            }
+
+            auto info = get_info(args[1]);
+            print_info(info);
+        }
+
+        else {
             std::cout << "Unknown command: " << args[0] << std::endl;
         }
     }
