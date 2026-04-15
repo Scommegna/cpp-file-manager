@@ -105,3 +105,26 @@ bool move_file(const std::string &src, const std::string &dst) {
 
     return true;
 }
+
+bool delete_path(const std::string &path) {
+    struct stat sb;
+
+    if (stat(path.c_str(), &sb) != 0) {
+      std::cout << "Failed to stat of " << path << std::endl;
+        return false;
+    }
+
+    if (S_ISDIR(sb.st_mode)) {
+        if (rmdir(path.c_str()) != 0) {
+            std::cout << "Failed to remove " << path << std::endl;
+            return false;
+        }
+    } else {
+        if (unlink(path.c_str()) != 0) {
+            std::cout << "Failed to remove " << path << std::endl;
+            return false;
+        }
+    }
+
+    return true;
+}

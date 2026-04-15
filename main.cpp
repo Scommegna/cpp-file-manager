@@ -56,6 +56,18 @@ int main() {
                 std::cout << "Error to move " << args[1] << " from " << args[2] << std::endl;
             }
         }
+        else if (args[0] == "delete") {
+            if (args.size() < 2) {
+                std::cout << "Usage: delete <src>" << std::endl;
+                continue;
+            }
+
+            if (delete_path(args[1])) {
+                std::cout << "Deleted " << args[1] << " successfully." << std::endl;
+            } else {
+                std::cout << "Error to delete " << args[1] << std::endl;
+            }
+        }
         else {
             std::cout << "Unknown command: " << args[0] << std::endl;
         }
