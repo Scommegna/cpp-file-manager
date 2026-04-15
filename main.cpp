@@ -44,6 +44,18 @@ int main() {
                 std::cout << "Error to copy " << args[1] << " from " << args[2] << std::endl;
             }
         }
+        else if (args[0] == "move") {
+            if (args.size() < 3) {
+                std::cout << "Usage: move <src> <dst>" << std::endl;
+                continue;
+            }
+
+            if (move_file(args[1], args[2])) {
+                std::cout << "Moved " << args[1] << " to " << args[2] << std::endl;
+            } else {
+                std::cout << "Error to move " << args[1] << " from " << args[2] << std::endl;
+            }
+        }
         else {
             std::cout << "Unknown command: " << args[0] << std::endl;
         }

@@ -19,5 +19,6 @@ struct FileInfo {
 std::vector<FileEntry> list_dir(const std::string& path);
 FileInfo get_info(const std::string& path);
 bool copy_file(const std::string& src, const std::string& dst);
+bool move_file(const std::string& src, const std::string& dst);
 
 #endif
