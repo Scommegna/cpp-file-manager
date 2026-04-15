@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <cstdio>
+#include <limits>
 
 std::vector<FileEntry> list_dir(const std::string &path) {
     std::vector<FileEntry> result;
@@ -160,4 +161,24 @@ bool delete_path(const std::string &path) {
     }
 
     return true;
+}
+
+bool change_dir(const std::string &path) {
+    if (chdir(path.c_str()) != 0) {
+        std::cout << "Failed to chdir to " << path << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+std::string get_current_dir() {
+    char buffer[PATH_MAX];
+
+    if (getcwd(buffer, sizeof(buffer)) == nullptr) {
+        std::cout << "Error getting current directory " << buffer << std::endl;
+        return "";
+    }
+
+    return std::string(buffer);
 }

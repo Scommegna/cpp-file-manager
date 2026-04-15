@@ -68,6 +68,19 @@ int main() {
                 std::cout << "Error to delete " << args[1] << std::endl;
             }
         }
+        else if (args[0] == "cd") {
+            if (args.size() < 2) {
+                std::cout << "Usage: cd <src>" << std::endl;
+                continue;
+            }
+
+            if (!change_dir(args[1])) {
+                std::cout << "Error to change directory " << args[1] << std::endl;
+            }
+        }
+        else if (args[0] == "pwd") {
+            std::cout << get_current_dir() << std::endl;
+        }
         else {
             std::cout << "Unknown command: " << args[0] << std::endl;
         }
