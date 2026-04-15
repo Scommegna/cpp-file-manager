@@ -109,12 +109,45 @@ bool move_file(const std::string &src, const std::string &dst) {
 bool delete_path(const std::string &path) {
     struct stat sb;
 
-    if (stat(path.c_str(), &sb) != 0) {
+    if (lstat(path.c_str(), &sb) != 0) {
       std::cout << "Failed to stat of " << path << std::endl;
         return false;
     }
 
+    if (S_ISLNK(sb.st_mode)) {
+        if (unlink(path.c_str()) != 0) {
+            std::cout << "Failed to remove symlink " << path << std::endl;
+            return false;
+        }
+
+        return true;
+    }
+
     if (S_ISDIR(sb.st_mode)) {
+        DIR* dir = opendir(path.c_str());
+
+        if (!dir) {
+            std::cout << "Failed to open " << path << std::endl;
+            return false;
+        }
+
+        struct dirent* entry;
+
+        while ((entry = readdir(dir)) != nullptr) {
+            std::string name = entry->d_name;
+
+            if (name == "." || name == "..") continue;
+
+            std::string full_path = path + "/" + name;
+
+            if (!delete_path(full_path)) {
+                closedir(dir);
+                return false;
+            }
+        }
+
+        closedir(dir);
+
         if (rmdir(path.c_str()) != 0) {
             std::cout << "Failed to remove " << path << std::endl;
             return false;
