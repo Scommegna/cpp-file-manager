@@ -3,6 +3,8 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <iostream>
+#include <fcntl.h>
+#include <unistd.h>
 
 std::vector<FileEntry> list_dir(const std::string &path) {
     std::vector<FileEntry> result;
@@ -52,4 +54,44 @@ FileInfo get_info(const std::string& path) {
     info.mode = sb.st_mode;
 
     return info;
+}
+
+bool copy_file(const std::string &src, const std::string &dst) {
+    const size_t BUFFER_SIZE = 4096;
+    char buffer[BUFFER_SIZE];
+
+    int src_fd = open(src.c_str(), O_RDONLY);
+    if (src_fd < 0) {
+        std::cout << "Failed to open " << src << std::endl;
+        return false;
+    }
+
+    int dst_fd = open(dst.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (dst_fd < 0) {
+        std::cout << "Failed to open " << dst << std::endl;
+        return false;
+    }
+
+    ssize_t bytes_read;
+
+    while ((bytes_read = read(src_fd, buffer, BUFFER_SIZE)) > 0) {
+        ssize_t bytes_written = write(dst_fd, buffer, bytes_read);
+
+        if (bytes_written != bytes_read) {
+            std::cout << "Failed to write " << bytes_read << std::endl;
+            close(src_fd);
+            close(dst_fd);
+            return false;
+        }
+    }
+
+    if (bytes_read < 0) {
+        std::cout << "Failed to read " << src << std::endl;
+        return false;
+    }
+
+    close(src_fd);
+    close(dst_fd);
+
+    return true;
 }

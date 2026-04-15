@@ -14,16 +14,16 @@ int main() {
 
         if (args.empty()) continue;
 
-        if (args[0] == "exit") break;
-
-        if (args[0] == "list") {
+        if (args[0] == "exit") {
+            break;
+        }
+        else if (args[0] == "list") {
             std::string path = (args.size() > 1) ? args[1] : ".";
 
             auto files = list_dir(path);
             print_files(files);
         }
-
-        if (args[0] == "info") {
+        else if (args[0] == "info") {
             if (args.size() < 2) {
                 std::cout << "Usage: info <file>" << std::endl;
                 continue;
@@ -32,7 +32,18 @@ int main() {
             auto info = get_info(args[1]);
             print_info(info);
         }
+        else if (args[0] == "copy") {
+            if (args.size() < 3) {
+                std::cout << "Usage: copy <src> <dst>" << std::endl;
+                continue;
+            }
 
+            if (copy_file(args[1], args[2])) {
+                std::cout << "Copied " << args[1] << " to " << args[2] << std::endl;
+            } else {
+                std::cout << "Error to copy " << args[1] << " from " << args[2] << std::endl;
+            }
+        }
         else {
             std::cout << "Unknown command: " << args[0] << std::endl;
         }
