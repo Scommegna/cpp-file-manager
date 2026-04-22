@@ -3,6 +3,7 @@
 #include "filesystem.h"
 #include "tree.h"
 #include "utils.h"
+#include "search.h"
 
 int main() {
     std::string input;
@@ -86,6 +87,17 @@ int main() {
             std::string path = (args.size() > 1) ? args[1] : ".";
 
             print_tree(path);
+        }
+        else if (args[0] == "search") {
+            if (args.size() < 2) {
+                std::cout << "Usage: search <term> [path]" << std::endl;
+                continue;
+            }
+
+            std::string term = args[1];
+            std::string path = (args.size() > 2) ? args[2] : ".";
+
+            search_files(term, path);
         }
         else {
             std::cout << "Unknown command: " << args[0] << std::endl;
