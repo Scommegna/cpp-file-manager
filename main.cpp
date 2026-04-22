@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "filesystem.h"
+#include "tree.h"
 #include "utils.h"
 
 int main() {
@@ -80,6 +81,11 @@ int main() {
         }
         else if (args[0] == "pwd") {
             std::cout << get_current_dir() << std::endl;
+        }
+        else if (args[0] == "tree") {
+            std::string path = (args.size() > 1) ? args[1] : ".";
+
+            print_tree(path);
         }
         else {
             std::cout << "Unknown command: " << args[0] << std::endl;

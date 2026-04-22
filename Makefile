@@ -1,7 +1,7 @@
 CXX = g++
 CXXFLAGS = -Wall -std=c++17
 
-SRC = main.cpp filesystem.cpp utils.cpp
+SRC = main.cpp filesystem.cpp utils.cpp tree.cpp
 OUT = fm
 
 all:
