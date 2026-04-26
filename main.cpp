@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 #include <vector>
 #include "filesystem.h"
 #include "tree.h"
@@ -98,6 +99,23 @@ int main() {
             std::string path = (args.size() > 2) ? args[2] : ".";
 
             search_files(term, path);
+        }
+        else if (args[0] == "search-mt") {
+            if (args.size() < 2) {
+                std::cout << "Usage: search-mt <term> [path] [threads]" << std::endl;
+                continue;
+            }
+
+            std::string term = args[1];
+            std::string path = (args.size() > 2) ? args[2] : ".";
+
+            unsigned int threads = std::thread::hardware_concurrency();
+
+            if (args.size() > 3) {
+                threads = std::stoi(args[3]);
+            }
+
+            search_files_mt(term, path, threads);
         }
         else {
             std::cout << "Unknown command: " << args[0] << std::endl;

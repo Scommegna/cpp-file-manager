@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -std=c++17
+CXXFLAGS = -Wall -Wextra -std=c++17 -pthread
 
 SRC = main.cpp filesystem.cpp utils.cpp tree.cpp search.cpp
 OUT = fm
