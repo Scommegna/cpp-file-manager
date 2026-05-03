@@ -51,3 +51,13 @@ std::string format_permissions(const mode_t mode) {
 
     return perms;
 }
+
+bool has_flag(const std::vector<std::string>& args, const std::string& flag) {
+    for(const auto& arg : args) {
+        if (arg == flag) {
+            return true;
+        }
+    }
+
+    return false;
+}
