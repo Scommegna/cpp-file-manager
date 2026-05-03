@@ -1,0 +1,8 @@
+//
+// Created by scommegna on 02/05/2026.
+//
+
+#ifndef CPP_FILE_MANAGER_BENCHMARK_H
+#define CPP_FILE_MANAGER_BENCHMARK_H
+
+#endif //CPP_FILE_MANAGER_BENCHMARK_H
