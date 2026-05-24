@@ -2,6 +2,7 @@
 
 #include <dirent.h>
 #include <sys/stat.h>
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <atomic>
@@ -11,7 +12,15 @@
 #include <thread>
 #include <vector>
 
-void search_recursive(const std::string& term, const std::string& path) {
+void print_results(std::vector<std::string>& results) {
+    std::sort(results.begin(), results.end());
+
+    for (const auto& path : results) {
+        std::cout << path << std::endl;
+    }
+}
+
+void search_recursive(const std::string& term, const std::string& path, std::vector<std::string>& results) {
     DIR* dir = opendir(path.c_str());
 
     if (!dir) return;
@@ -26,7 +35,7 @@ void search_recursive(const std::string& term, const std::string& path) {
         std::string full_path = path + "/" + name;
 
         if (name.find(term) != std::string::npos) {
-            std::cout << full_path << std::endl;
+            results.push_back(full_path);
         }
 
         struct stat sb;
@@ -34,7 +43,7 @@ void search_recursive(const std::string& term, const std::string& path) {
         if (lstat(full_path.c_str(), &sb) != 0) continue;
 
         if (S_ISDIR(sb.st_mode)) {
-            search_recursive(term, full_path);
+            search_recursive(term, full_path, results);
         }
     }
 
@@ -42,7 +51,10 @@ void search_recursive(const std::string& term, const std::string& path) {
 }
 
 void search_files(const std::string& term, const std::string& path) {
-    search_recursive(term, path);
+    std::vector<std::string> results;
+
+    search_recursive(term, path, results);
+    print_results(results);
 }
 
 void search_files_mt(const std::string &term, const std::string &root_path, unsigned int thread_count) {
@@ -52,8 +64,9 @@ void search_files_mt(const std::string &term, const std::string &root_path, unsi
     }
 
     std::queue<std::string> directories;
+    std::vector<std::string> results;
     std::mutex queue_mutex;
-    std::mutex cout_mutex;
+    std::mutex results_mutex;
     std::condition_variable cv;
 
     std::atomic<int> active_tasks{0};
@@ -99,8 +112,8 @@ void search_files_mt(const std::string &term, const std::string &root_path, unsi
                     full_path += name;
 
                     if (name.find(term) != std::string::npos) {
-                        std::lock_guard<std::mutex> cout_lock(cout_mutex);
-                        std::cout << full_path << std::endl;
+                        std::lock_guard<std::mutex> results_lock(results_mutex);
+                        results.push_back(full_path);
                     }
 
                     struct stat sb;
@@ -141,4 +154,6 @@ void search_files_mt(const std::string &term, const std::string &root_path, unsi
     for (auto& t : threads) {
         t.join();
     }
+
+    print_results(results);
 }
