@@ -5,16 +5,36 @@
 #include <sys/stat.h>
 #include <algorithm>
 #include <condition_variable>
+#include <cerrno>
+#include <cstring>
 #include <mutex>
 #include <queue>
+#include <stdexcept>
 #include <thread>
 #include <vector>
 
 namespace {
 
-void search_recursive(const std::string& term, const std::string& path, std::vector<std::string>& results) {
+DIR* open_root_directory(const std::string& path) {
+    struct stat sb;
+    if (lstat(path.c_str(), &sb) != 0) {
+        int error = errno;
+        throw std::runtime_error("cannot access initial directory '" + path + "': " + std::strerror(error));
+    }
+    if (!S_ISDIR(sb.st_mode)) {
+        throw std::runtime_error("initial path is not a directory: " + path);
+    }
+
     DIR* dir = opendir(path.c_str());
-    if (!dir) return;
+    if (!dir) {
+        int error = errno;
+        throw std::runtime_error("cannot open initial directory '" + path + "': " + std::strerror(error));
+    }
+    return dir;
+}
+
+void search_directory(const std::string& term, const std::string& path, DIR* dir,
+                      std::vector<std::string>& results) {
 
     struct dirent* entry;
     while ((entry = readdir(dir)) != nullptr) {
@@ -26,7 +46,8 @@ void search_recursive(const std::string& term, const std::string& path, std::vec
 
         struct stat sb;
         if (lstat(full_path.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode)) {
-            search_recursive(term, full_path, results);
+            DIR* subdir = opendir(full_path.c_str());
+            if (subdir) search_directory(term, full_path, subdir, results);
         }
     }
     closedir(dir);
@@ -36,13 +57,17 @@ void search_recursive(const std::string& term, const std::string& path, std::vec
 
 std::vector<std::string> search_files(const std::string& term, const std::string& path) {
     std::vector<std::string> results;
-    search_recursive(term, path, results);
+    DIR* dir = open_root_directory(path);
+    search_directory(term, path, dir, results);
     std::sort(results.begin(), results.end());
     return results;
 }
 
 std::vector<std::string> search_files_mt(const std::string& term, const std::string& root_path, unsigned int thread_count) {
     if (thread_count <= 1) return search_files(term, root_path);
+
+    DIR* root = open_root_directory(root_path);
+    closedir(root);
 
     std::queue<std::string> directories;
     std::vector<std::string> results;

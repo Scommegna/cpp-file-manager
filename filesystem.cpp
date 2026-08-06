@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <limits>
 #include <cerrno>
+#include <cstring>
 
 std::string join_path(const std::string& base, const std::string& name) {
     if (base.empty()) return name;
@@ -198,7 +199,8 @@ std::string get_current_dir() {
     char buffer[PATH_MAX];
 
     if (getcwd(buffer, sizeof(buffer)) == nullptr) {
-        std::cout << "Error getting current directory " << buffer << std::endl;
+        int error = errno;
+        std::cout << "Error getting current directory: " << std::strerror(error) << std::endl;
         return "";
     }
 
