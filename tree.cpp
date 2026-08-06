@@ -1,4 +1,5 @@
 #include "tree.h"
+#include "filesystem.h"
 
 #include <dirent.h>
 #include <sys/stat.h>
@@ -34,7 +35,7 @@ void print_tree_recursive(const std::string &path, const std::string &prefix) {
         bool last = (i == entries.size() - 1);
 
         std::string name = entries[i];
-        std::string full_path = path + "/" + name;
+        std::string full_path = join_path(path, name);
 
         std::cout << prefix;
 

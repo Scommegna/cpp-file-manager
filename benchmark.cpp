@@ -4,15 +4,15 @@
 #include <fstream>
 #include <sstream>
 #include <unistd.h>
+#include <iomanip>
 
 void Benchmark::start_benchmark() {
-    start_time = std::chrono::high_resolution_clock::now();
+    start_time = std::chrono::steady_clock::now();
 }
 
 BenchmarkResult Benchmark::stop_benchmark() {
-    auto end_time = std::chrono::high_resolution_clock::now();
-
-    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
+    auto end_time = std::chrono::steady_clock::now();
+    double elapsed = std::chrono::duration<double, std::milli>(end_time - start_time).count();
 
     BenchmarkResult result;
 
@@ -50,11 +50,11 @@ long get_memory_usage_kb() {
 
 void print_benckmark(const BenchmarkResult &result) {
     std::cout << "\n[Benchmark]\n";
-    std::cout << "Execution time: " << result.elapsed_time_ms << " ms\n";
+    std::cout << "Execution time: " << std::fixed << std::setprecision(3) << result.elapsed_time_ms << " ms\n";
 
     if (result.memory_usage_kb >= 0) {
-        std::cout << "Resident memory: " << result.memory_usage_kb << " kb\n";
+        std::cout << "Current resident memory: " << result.memory_usage_kb << " kB\n";
     } else {
-        std::cout << "Resident memory: not available" << std::endl;
+        std::cout << "Current resident memory: not available" << std::endl;
     }
 }

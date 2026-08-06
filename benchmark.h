@@ -5,13 +5,13 @@
 #include <string>
 
 struct BenchmarkResult {
-    long elapsed_time_ms;
+    double elapsed_time_ms;
     long memory_usage_kb;
 };
 
 class Benchmark {
     private:
-        std::chrono::high_resolution_clock::time_point start_time;
+        std::chrono::steady_clock::time_point start_time;
 
     public:
         void start_benchmark();

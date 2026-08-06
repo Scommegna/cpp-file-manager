@@ -7,6 +7,13 @@
 #include <unistd.h>
 #include <cstdio>
 #include <limits>
+#include <cerrno>
+
+std::string join_path(const std::string& base, const std::string& name) {
+    if (base.empty()) return name;
+    if (base.back() == '/') return base + name;
+    return base + "/" + name;
+}
 
 std::vector<FileEntry> list_dir(const std::string &path) {
     std::vector<FileEntry> result;
@@ -71,25 +78,40 @@ bool copy_file(const std::string &src, const std::string &dst) {
     int dst_fd = open(dst.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
     if (dst_fd < 0) {
         std::cout << "Failed to open " << dst << std::endl;
+        close(src_fd);
         return false;
     }
 
-    ssize_t bytes_read;
+    while (true) {
+        ssize_t bytes_read;
+        do {
+            bytes_read = read(src_fd, buffer, BUFFER_SIZE);
+        } while (bytes_read < 0 && errno == EINTR);
 
-    while ((bytes_read = read(src_fd, buffer, BUFFER_SIZE)) > 0) {
-        ssize_t bytes_written = write(dst_fd, buffer, bytes_read);
+        if (bytes_read == 0) break;
 
-        if (bytes_written != bytes_read) {
-            std::cout << "Failed to write " << bytes_read << std::endl;
+        if (bytes_read < 0) {
+            std::cout << "Failed to read " << src << std::endl;
             close(src_fd);
             close(dst_fd);
             return false;
         }
-    }
 
-    if (bytes_read < 0) {
-        std::cout << "Failed to read " << src << std::endl;
-        return false;
+        ssize_t total_written = 0;
+        while (total_written < bytes_read) {
+            ssize_t bytes_written;
+            do {
+                bytes_written = write(dst_fd, buffer + total_written, bytes_read - total_written);
+            } while (bytes_written < 0 && errno == EINTR);
+
+            if (bytes_written <= 0) {
+                std::cout << "Failed to write " << dst << std::endl;
+                close(src_fd);
+                close(dst_fd);
+                return false;
+            }
+            total_written += bytes_written;
+        }
     }
 
     close(src_fd);
@@ -139,7 +161,7 @@ bool delete_path(const std::string &path) {
 
             if (name == "." || name == "..") continue;
 
-            std::string full_path = path + "/" + name;
+            std::string full_path = join_path(path, name);
 
             if (!delete_path(full_path)) {
                 closedir(dir);
