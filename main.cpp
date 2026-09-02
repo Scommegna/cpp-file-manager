@@ -28,12 +28,29 @@ void print_search_results(const std::vector<std::string>& results) {
     for (const auto& path : results) std::cout << path << std::endl;
 }
 
+void show_help() {
+    std::cout << "Available Commands:" << std::endl;
+    std::cout << "  list <dir>                             List files of directory." << std::endl;
+    std::cout << "  info <file or dir>                     Show information of file or directory." << std::endl;
+    std::cout << "  copy <origin> <dest>                   Copies a file." << std::endl;
+    std::cout << "  move <origin> <dest>                   Rename file." << std::endl;
+    std::cout << "  delete <file_or_dir>                   Remove file or directory." << std::endl;
+    std::cout << "  cd <dir>                               Changes current directory." << std::endl;
+    std::cout << "  pwd                                    Show current directory." << std::endl;
+    std::cout << "  tree <dir>                             Show folder tree." << std::endl;
+    std::cout << "  search <name> <dir> [threads]          Search files or directories by name." << std::endl;
+    std::cout << "  search-mt <name> <dir> [threads]       Search using multiple threads." << std::endl;
+    std::cout << "  --benchmark, -b                        Print execution time and resident memory." << std::endl;
+    std::cout << "  help                                   Show help message." << std::endl;
+    std::cout << "  exit                                   Quits file manager." << std::endl;
+}
+
 int main() {
     std::string input;
 
     while (true) {
         std::cout << "fm> ";
-        if (!std::getline(std::cin, input)) break;
+        if (!std::getline(std::cin, input)) break; 
 
         auto args = split(input);
 
@@ -41,6 +58,9 @@ int main() {
 
         if (args[0] == "exit") {
             break;
+        }
+        else if (args[0] == "help") {
+            show_help();
         }
         else if (args[0] == "list") {
             bool benchmark_enabled = has_flag(args, "--benchmark") || has_flag(args, "-b");
@@ -56,7 +76,7 @@ int main() {
 
             if (benchmark_enabled) {
                 auto result = benchmark.stop_benchmark();
-                print_benckmark(result);
+                print_benchmark(result);
             }
         }
         else if (args[0] == "info") {
@@ -76,7 +96,7 @@ int main() {
 
             if (benchmark_enabled) {
                 auto result = benchmark.stop_benchmark();
-                print_benckmark(result);
+                print_benchmark(result);
             }
         }
         else if (args[0] == "copy") {
@@ -100,7 +120,7 @@ int main() {
                 std::cout << "Error to copy " << args[1] << " from " << args[2] << std::endl;
             }
 
-            if (benchmark_enabled) print_benckmark(result);
+            if (benchmark_enabled) print_benchmark(result);
         }
         else if (args[0] == "move") {
             if (args.size() < 3) {
@@ -122,7 +142,7 @@ int main() {
 
             if (benchmark_enabled) {
                 auto result = benchmark.stop_benchmark();
-                print_benckmark(result);
+                print_benchmark(result);
             }
         }
         else if (args[0] == "delete") {
@@ -145,7 +165,7 @@ int main() {
 
             if (benchmark_enabled) {
                 auto result = benchmark.stop_benchmark();
-                print_benckmark(result);
+                print_benchmark(result);
             }
         }
         else if (args[0] == "cd") {
@@ -166,7 +186,7 @@ int main() {
 
             if (benchmark_enabled) {
                 auto result = benchmark.stop_benchmark();
-                print_benckmark(result);
+                print_benchmark(result);
             }
         }
         else if (args[0] == "pwd") {
@@ -180,7 +200,7 @@ int main() {
 
             if (benchmark_enabled) {
                 auto result = benchmark.stop_benchmark();
-                print_benckmark(result);
+                print_benchmark(result);
             }
         }
         else if (args[0] == "tree") {
@@ -196,7 +216,7 @@ int main() {
 
             if (benchmark_enabled) {
                 auto result = benchmark.stop_benchmark();
-                print_benckmark(result);
+                print_benchmark(result);
             }
         }
         else if (args[0] == "search") {
@@ -235,7 +255,7 @@ int main() {
             if (benchmark_enabled) result = benchmark.stop_benchmark();
             if (benchmark_enabled) {
                 std::cout << "Matches: " << results.size() << std::endl;
-                print_benckmark(result);
+                print_benchmark(result);
             } else {
                 print_search_results(results);
             }
@@ -277,13 +297,14 @@ int main() {
             if (benchmark_enabled) result = benchmark.stop_benchmark();
             if (benchmark_enabled) {
                 std::cout << "Matches: " << results.size() << std::endl;
-                print_benckmark(result);
+                print_benchmark(result);
             } else {
                 print_search_results(results);
             }
         }
         else {
             std::cout << "Unknown command: " << args[0] << std::endl;
+            std::cout << "Type 'help' to show available commands" << std::endl;
         }
     }
 

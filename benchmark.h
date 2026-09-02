@@ -2,7 +2,6 @@
 #define CPP_FILE_MANAGER_BENCHMARK_H
 
 #include <chrono>
-#include <string>
 
 struct BenchmarkResult {
     double elapsed_time_ms;
@@ -19,6 +18,6 @@ class Benchmark {
 };
 
 long get_memory_usage_kb();
-void print_benckmark(const BenchmarkResult& result);
+void print_benchmark(const BenchmarkResult& result);
 
 #endif

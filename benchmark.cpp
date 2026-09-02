@@ -3,7 +3,6 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <unistd.h>
 #include <iomanip>
 
 void Benchmark::start_benchmark() {
@@ -48,7 +47,7 @@ long get_memory_usage_kb() {
     return -1;
 }
 
-void print_benckmark(const BenchmarkResult &result) {
+void print_benchmark(const BenchmarkResult &result) {
     std::cout << "\n[Benchmark]\n";
     std::cout << "Execution time: " << std::fixed << std::setprecision(3) << result.elapsed_time_ms << " ms\n";
 

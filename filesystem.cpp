@@ -6,7 +6,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <cstdio>
-#include <limits>
 #include <cerrno>
 #include <cstring>
 
